@@ -1,0 +1,50 @@
+ Angular
+/node_modules/
+/dist/
+/tmp/
+/.out-tsc/
+/coverage/
+/src/environments/environment*.ts
+/src/assets/**/*.pem
+/src/assets/**/*.key
+/src/assets/**/*.crt
+/.angular/
+
+# Compiled files
+*.class
+
+# Django
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+db.sqlite3
+db.sqlite3-journal
+
+# Virtual environment
+/venv/
+/env/
+/.venv/
+/.env/
+
+# Django media & static files
+/media/
+/static/
+/staticfiles/
+
+# Local environment settings
+/.env
+/.python-version
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+*.iml
+
+# OS generated files
+.DS_Store
+Thumbs.db
