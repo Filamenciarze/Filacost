@@ -15,11 +15,11 @@ export class UserService {
   ) { }
 
   private isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private user: BehaviorSubject<User> = new BehaviorSubject<User>({role: 'USER'} as User);
+  private user: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   public isAuthenticated$: Observable<boolean> = this.isAuthenticated.asObservable();
-  public user$: Observable<User> = this.user.asObservable();
+  public user$: Observable<User | null> = this.user.asObservable();
 
-  set userData(user: User) {
+  setUserData(user: User | null) {
     this.user.next(user);
   }
 
