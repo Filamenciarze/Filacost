@@ -5,33 +5,34 @@
       <mat-form-field appearance="fill">
         <mat-label>Email</mat-label>
         <input matInput formControlName="email" type="email" required />
+        <mat-error *ngIf="email?.hasError('required')">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="email?.hasError('email')">
+          Email is not valid
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Password</mat-label>
         <input matInput formControlName="password" type="password" required />
+        <mat-error *ngIf="password?.hasError('required')">
+          Password is required
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
-        <mat-label>First Name</mat-label>
-        <input matInput formControlName="firstName" type="text" required/>
+        <mat-label>Confirm Password</mat-label>
+        <input matInput formControlName="confirmPassword" type="password" required />
+        <mat-error *ngIf="confirmPassword?.hasError('required')">
+          Confirm password is required
+        </mat-error>
+        <mat-error *ngIf="confirmPassword?.hasError('mismatch') && confirmPassword?.touched">
+          Passwords do not match
+        </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Last Name</mat-label>
-        <input matInput formControlName="lastName" type="text" required/>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Choose a date</mat-label>
-        <input matInput [matDatepicker]="picker" />
-        <mat-datepicker-toggle matIconSuffix [for]="picker">
-          <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
-        </mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-
-      <button mat-raised-button color="primary" type="submit" [disabled]="!registerForm.valid">
+      <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid">
         Register
       </button>
     </form>

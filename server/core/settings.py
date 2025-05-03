@@ -61,7 +61,7 @@ MIDDLEWARE = [
     'accounts.middleware.JWTAuthCookieMiddleware'
 ]
 
-CORS_ALLOW_ALL_ORIGINS = False  # or True if you're in dev
+CORS_ALLOW_ALL_ORIGINS = False
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",

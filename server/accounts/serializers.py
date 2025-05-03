@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from envs.spark.Lib.distutils.command.install import value
 from rest_framework import serializers
 from .models import User, Profile
 
@@ -16,17 +17,19 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    profile = ProfileSerializer()
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'profile']
+        fields = ['email', 'password']
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("User with this email already exists.")
+        return value
 
     def create(self, validated_data):
         validated_data.pop('role', None)
-        profile_data = validated_data.pop('profile')
         user = User.objects.create_user(role='USER', **validated_data)
-        Profile.objects.create(user=user, **profile_data)
         return user
 
 class LoginSerializer(serializers.Serializer):

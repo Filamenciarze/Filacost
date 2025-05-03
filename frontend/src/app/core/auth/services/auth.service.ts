@@ -21,6 +21,10 @@ export class AuthService {
     return this.httpClient.post<User>(AppSettingsService.API_URL+'/auth/login/',{email:email,password:password}, {withCredentials: true})
   }
 
+  register(email: string, password: string) {
+    return this.httpClient.post<any>(AppSettingsService.API_URL+'/auth/register/', {email:email, password:password})
+  }
+
   logout() {
     this.httpClient.post<any>(AppSettingsService.API_URL+'/auth/logout/',{}).subscribe({
       next: value => {
