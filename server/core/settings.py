@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     'rest_framework', #DRF
     'rest_framework_simplejwt', #DRF JWT,
     'corsheaders',
-    'accounts'
+    'accounts',
+    'orders',
+    'prints'
 ]
 
 MIDDLEWARE = [
