@@ -7,11 +7,11 @@ class RolePermission(BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role == self.required_role
 
-class AdminPermission(BasePermission):
+class AdminPermission(RolePermission):
     required_role = 'ADMIN'
 
-class UserPermission(BasePermission):
+class UserPermission(RolePermission):
     required_role = 'USER'
 
-class ManagerPermission(BasePermission):
+class ManagerPermission(RolePermission):
     required_role = 'MANAGER'

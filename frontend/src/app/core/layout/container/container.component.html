@@ -25,14 +25,27 @@
         </button>
       }
       <img class="logo" src="/logo-horizontal-black.png" alt="logo_filacost">
-      <button *ngIf="!isAuthenticated" mat-button color="primary" class="" routerLink="login">
-        <mat-icon>login</mat-icon>
-        Login
-      </button>
-      <button *ngIf="isAuthenticated" mat-button color="primary" class="" (click)="logout()">
-        <mat-icon>logout</mat-icon>
-        Logout
-      </button>
+      <div>
+        <button *ngIf="!isAuthenticated" mat-button color="primary" class="" routerLink="register">
+          <mat-icon>person_add</mat-icon>
+          Create Account
+        </button>
+        <button *ngIf="!isAuthenticated" mat-button color="primary" class="" routerLink="login">
+          <mat-icon>login</mat-icon>
+          Login
+        </button>
+        <button *ngIf="isAuthenticated" mat-button [matMenuTriggerFor]="menu" color="primary" class="">
+          <mat-icon>person</mat-icon>
+          Account
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item>Personal data</button>
+        </mat-menu>
+        <button *ngIf="isAuthenticated" mat-button color="primary" class="" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
+      </div>
     </mat-toolbar>
     <app-router-content></app-router-content>
   </mat-sidenav-content>

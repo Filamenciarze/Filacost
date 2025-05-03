@@ -31,6 +31,13 @@ class AuthStatusView(APIView):
 class RegisterView(CreateAPIView):
     serializer_class = RegisterSerializer
 
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        return Response({
+            'success': True,
+            'message': 'User registered successfully.',
+            'data': response.data
+        }, status=response.status_code)
 
 class LoginView(APIView):
     def post(self, request):
@@ -48,7 +55,7 @@ class LoginView(APIView):
             value=str(tokens['access']),
             httponly=True,
             secure=env.str("PROFILE") == "PROD",
-            samesite='Lax',
+            samesite='Strict',
         )
 
         response.set_cookie(
@@ -56,7 +63,7 @@ class LoginView(APIView):
             value=str(tokens['refresh']),
             httponly=True,
             secure=env.str("PROFILE") == "PROD",
-            samesite='Lax',
+            samesite='Strict',
         )
 
         return response
@@ -77,7 +84,7 @@ class CookieTokenRefreshView(TokenRefreshView):
             value=serializer.validated_data['access'],
             httponly=True,
             secure=env.str("PROFILE") == "PROD",
-            samesite='Lax'
+            samesite='Strict'
         )
         return response
 

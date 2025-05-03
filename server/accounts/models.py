@@ -1,6 +1,9 @@
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
+from django.core.validators import MaxValueValidator
+from phonenumber_field.modelfields import PhoneNumberField
 from django.db import models
+from datetime import date
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, role='USER', **extra_fields):
@@ -36,3 +39,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    date_of_birth = models.DateField(validators=[MaxValueValidator(date.today)], blank=True)
+    phone_number = PhoneNumberField(blank=True, region='PL')
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
