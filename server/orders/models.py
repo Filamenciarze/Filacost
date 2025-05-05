@@ -1,8 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 import uuid
 from datetime import timedelta
+
+from prints.models import Model3D
+from accounts.models import Address, User
 
 class ShipmentType(models.Model):
     shipment_type_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, null=False)
@@ -20,7 +22,7 @@ class Order(models.Model):
 
     order_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, null=False)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    ordered_models = models.ManyToManyField(Model3D, through='OrderPrint', null=True, blank=True)
+    ordered_models = models.ManyToManyField(Model3D, through='OrderPrint')
     shipping_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
     shipment_type = models.ForeignKey(ShipmentType, on_delete=models.SET_NULL, null=True)
     order_status = models.CharField(choices=OrderStatus.choices, default=OrderStatus.PAYMENT, max_length=10, null=False,
@@ -34,8 +36,8 @@ class OrderPrint(models.Model):
         PLA = 'PLA', 'PLA'
         ABS = 'ABS', 'ABS'
 
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    model3d = models.ForeignKey(Model3D, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
+    model3d = models.ForeignKey(Model3D, on_delete=models.CASCADE, null=True)
     material = models.CharField(choices=PrintMaterials.choices, max_length=5, null=False, blank=False)
     quantity = models.PositiveIntegerField(default=1, null=False, blank=False)
     print_time_estimation = models.DurationField(default=timedelta, null=False, blank=False)

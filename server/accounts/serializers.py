@@ -1,5 +1,4 @@
 from django.contrib.auth import authenticate
-from envs.spark.Lib.distutils.command.install import value
 from rest_framework import serializers
 from .models import User, Profile
 
