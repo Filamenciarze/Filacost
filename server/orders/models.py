@@ -30,6 +30,7 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
 
 
+
 class OrderPrint(models.Model):
     class PrintMaterials(models.TextChoices):
         PETG = 'PETG', 'PETG'

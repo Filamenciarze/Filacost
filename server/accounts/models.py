@@ -60,3 +60,6 @@ class Address(models.Model):
     city = models.CharField(max_length=100, null=False, blank=False)
     state = models.CharField(max_length=100, null=False, blank=False)
     country = models.CharField(max_length=100, null=False, blank=False)
+
+    def __str__(self):
+        return f'{self.street_number} {self.street} {self.zipcode} {self.city} {self.state} {self.country}'
