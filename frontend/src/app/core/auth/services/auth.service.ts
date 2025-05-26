@@ -9,7 +9,6 @@ import {UserService} from '../../user/services/user.service';
   providedIn: 'root'
 })
 export class AuthService {
-
   constructor(
     private router: Router,
     private httpClient: HttpClient,

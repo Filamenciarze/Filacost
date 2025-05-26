@@ -27,5 +27,5 @@ class Model3DView(APIView):
     def list(self, request):
 
         return Response({
-            "models": Model3D.objects.all()
+            "models": Model3D.objects.filter(user=request.user).values_list('id', flat=True)
         }, status=status.HTTP_200_OK)

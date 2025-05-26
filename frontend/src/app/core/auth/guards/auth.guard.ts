@@ -1,19 +1,20 @@
-import {CanActivateFn, Router} from '@angular/router';
-import {inject} from '@angular/core';
-import {UserService} from '../../user/services/user.service';
-import {map} from 'rxjs/operators';
-import {catchError, of} from 'rxjs';
+import { CanActivateFn, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { UserService } from '../../user/services/user.service';
+import { map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const userService = inject(UserService);
   const router = inject(Router);
-  let check_status = false;
 
-  userService.checkAuthStatus().pipe(
+  return userService.checkAuthStatus().pipe(
     map(status => {
-      check_status = status.authenticated;
+      return status.authenticated ? true : router.createUrlTree(['/login']);
     }),
-    catchError(() => of(router.createUrlTree(["/login"])))
-  )
-  return check_status;
+    catchError(() => {
+      // If check fails, redirect to login
+      return of(router.createUrlTree(['/login']));
+    })
+  );
 };
