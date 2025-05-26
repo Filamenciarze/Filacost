@@ -8,6 +8,7 @@
           type="file"
           hidden
           (change)="onFileSelected($event)"
+          accept="model/stl"
           #fileInput
         />
         <input
@@ -26,6 +27,10 @@
           {{ file.name }}
           <mat-icon matChipRemove (click)="removeFile()">close</mat-icon>
         </mat-chip>
+        <mat-chip color="primary">
+         Rozmiar: {{ file.size / 1024 | number:'1.0-2' }} kB
+          <mat-icon matChipRemove (click)="removeFile()">close</mat-icon>
+        </mat-chip>
       </div>
       <div>
         <button mat-button matStepperNext>Następne</button>
@@ -35,6 +40,7 @@
   <mat-step>
     <form>
       <ng-template matStepLabel>Podaj pozostałe dane</ng-template>
+      <ngt-canvas [sceneGraph]="sceneGraph" />
     </form>
   </mat-step>
 </mat-stepper>
