@@ -6,6 +6,7 @@ import {MatButton} from '@angular/material/button';
 import {AuthService} from '../../services/auth.service';
 import {Router} from '@angular/router';
 import {UserService} from '../../../user/services/user.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -30,6 +31,7 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router,
     private userService: UserService,
+    private snackBar: MatSnackBar
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -45,6 +47,9 @@ export class LoginComponent {
           this.userService.setUserData(result);
           this.router.navigate(['dashboard']).then(() => {
           });
+        },
+        error: err => {
+          let snackBarRef = this.snackBar.open('Authorization Failed', 'Ok');
         }
       })
     }
