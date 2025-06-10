@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     'rest_framework', #DRF
     'rest_framework_simplejwt', #DRF JWT,
     'corsheaders',
-    'accounts'
+    'accounts',
+    'orders',
+    'prints'
 ]
 
 MIDDLEWARE = [
@@ -61,7 +63,7 @@ MIDDLEWARE = [
     'accounts.middleware.JWTAuthCookieMiddleware'
 ]
 
-CORS_ALLOW_ALL_ORIGINS = False  # or True if you're in dev
+CORS_ALLOW_ALL_ORIGINS = False
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
@@ -132,7 +134,10 @@ AUTH_USER_MODEL = 'accounts.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+
 }
 
 # Internationalization

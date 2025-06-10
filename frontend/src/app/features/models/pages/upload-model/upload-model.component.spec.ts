@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GuestContainerComponent } from './guest-container.component';
+import { UploadModelComponent } from './upload-model.component';
 
-describe('GuestContainerComponent', () => {
-  let component: GuestContainerComponent;
-  let fixture: ComponentFixture<GuestContainerComponent>;
+describe('UploadModelComponent', () => {
+  let component: UploadModelComponent;
+  let fixture: ComponentFixture<UploadModelComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GuestContainerComponent]
+      imports: [UploadModelComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(GuestContainerComponent);
+    fixture = TestBed.createComponent(UploadModelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

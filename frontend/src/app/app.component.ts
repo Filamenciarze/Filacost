@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ContainerComponent} from './core/layout/container/container.component';
-import {RouterOutlet} from '@angular/router';
 import {UserService} from './core/user/services/user.service';
-import {User} from './core/user/interfaces/user';
 
 @Component({
   selector: 'app-root',
@@ -20,11 +18,11 @@ export class AppComponent implements OnInit {
     this.userService.checkAuthStatus().subscribe({
       next:(status) => {
         this.userService.authenticate();
-        this.userService.userData = status.user;
+        this.userService.setUserData(status.user);
       },
       error:(status) => {
         this.userService.remove_authentication();
-        this.userService.userData = {} as User
+        this.userService.setUserData(null)
       }
     });
   }

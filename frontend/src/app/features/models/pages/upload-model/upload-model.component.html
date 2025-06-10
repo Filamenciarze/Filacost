@@ -1,0 +1,46 @@
+<mat-stepper>
+  <mat-step>
+    <form>
+      <ng-template matStepLabel>Podaj plik</ng-template>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Upload File</mat-label>
+        <input
+          type="file"
+          hidden
+          (change)="onFileSelected($event)"
+          accept="model/stl"
+          #fileInput
+        />
+        <input
+          matInput
+          [value]="fileName"
+          placeholder="Choose a file"
+          readonly
+          (click)="fileInput.click()"
+        />
+        <button mat-icon-button matSuffix (click)="fileInput.click()">
+          <mat-icon>attach_file</mat-icon>
+        </button>
+      </mat-form-field>
+      <div *ngIf="file" class="mt-2">
+        <mat-chip color="primary">
+          {{ file.name }}
+          <mat-icon matChipRemove (click)="removeFile()">close</mat-icon>
+        </mat-chip>
+        <mat-chip color="primary">
+         Rozmiar: {{ file.size / 1024 | number:'1.0-2' }} kB
+          <mat-icon matChipRemove (click)="removeFile()">close</mat-icon>
+        </mat-chip>
+      </div>
+      <div>
+        <button mat-button matStepperNext>Następne</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <form>
+      <ng-template matStepLabel>Podaj pozostałe dane</ng-template>
+      <ngt-canvas [sceneGraph]="sceneGraph" />
+    </form>
+  </mat-step>
+</mat-stepper>

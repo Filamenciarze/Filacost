@@ -13,6 +13,8 @@ import {MatListItemComponent} from '../../../shared/utilities/components/mat-lis
 import {Router, RouterLink} from '@angular/router';
 import {UserService} from '../../user/services/user.service';
 import {AuthService} from '../../auth/services/auth.service';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {User} from '../../user/interfaces/user';
 
 @Component({
   selector: 'app-container',
@@ -29,13 +31,20 @@ import {AuthService} from '../../auth/services/auth.service';
     RouterContentComponent,
     MatListItemComponent,
     NgIf,
-    RouterLink
+    RouterLink,
+    MatMenu,
+    MatMenuTrigger,
+    MatMenuItem
   ]
 })
 export class ContainerComponent implements OnInit, OnDestroy{
   isHandset$: Observable<boolean>;
   isAuthenticated: boolean = false;
+  user: User | null = null;
+
   isAuthenticatedSubscription!: Subscription;
+  userSubscription!: Subscription;
+
   @ViewChild('drawer') drawer?: MatSidenav;
 
   constructor(
@@ -54,10 +63,15 @@ export class ContainerComponent implements OnInit, OnDestroy{
     this.isAuthenticatedSubscription = this.userService.isAuthenticated$.subscribe(isAuthenticated => {
       this.isAuthenticated = isAuthenticated;
     })
+    this.userSubscription = this.userService.user$.subscribe(user => {
+      console.log(user);
+      this.user = user;
+    })
   }
 
   ngOnDestroy() {
     this.isAuthenticatedSubscription.unsubscribe();
+    this.userSubscription.unsubscribe();
   }
 
   logout() {
