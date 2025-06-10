@@ -1,5 +1,6 @@
 from django.http import Http404
 from rest_framework import status
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -40,8 +41,9 @@ class Model3DView(APIView):
         model.delete()
         return Response({"detail": "Model deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
-    def list(self, request):
+class Model3DListView(ListAPIView):
+    serializer_class = Model3DSerializer
+    permission_classes = [IsAuthenticated]
 
-        return Response({
-            "models": Model3D.objects.filter(user=request.user).values_list('id', flat=True)
-        }, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        return Model3D.objects.filter(user=self.request.user).order_by('-id')
