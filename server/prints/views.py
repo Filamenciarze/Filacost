@@ -1,9 +1,13 @@
+import json
+
 from django.http import Http404
+from environs import Env
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+import requests
 
 from prints.models import Model3D
 from prints.serializers import Model3DSerializer
@@ -27,8 +31,9 @@ class Model3DView(APIView):
         data["user"] = request.user.id
         serializer = Model3DSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            model = serializer.save()
+            cost = self._slicer_request(model)
+            return Response(cost, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
@@ -40,6 +45,20 @@ class Model3DView(APIView):
 
         model.delete()
         return Response({"detail": "Model deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
+    def _slicer_request(self, model):
+        env = Env()
+        env.read_env("../.env")
+        slicer_url = f"http://{env.str("SLICER_HOST")}:{env.str("SLICER_PORT")}/slice"
+
+        with open(model.file.path, "rb") as f:
+            files = {
+                "stl_file": (model.filename_display, f, "application/sla")
+            }
+            response = requests.post(slicer_url, files=files)
+            cost = json.loads(response.text)
+            cost['cost'] += cost['est_time_seconds']/3600*1.11*0.7
+            return cost
 
 class Model3DListView(ListAPIView):
     serializer_class = Model3DSerializer

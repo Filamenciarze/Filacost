@@ -20,5 +20,12 @@ services:
     ports:
       - "5433:80"
 
+  slicer-service:
+    build:
+      context: slicer-service
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+
 volumes:
   postgres_data:
