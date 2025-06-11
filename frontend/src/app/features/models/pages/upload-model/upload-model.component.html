@@ -1,46 +1,57 @@
-<mat-stepper>
-  <mat-step>
-    <form>
-      <ng-template matStepLabel>Podaj plik</ng-template>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Upload File</mat-label>
-        <input
-          type="file"
-          hidden
-          (change)="onFileSelected($event)"
-          accept="model/stl"
-          #fileInput
-        />
-        <input
-          matInput
-          [value]="fileName"
-          placeholder="Choose a file"
-          readonly
-          (click)="fileInput.click()"
-        />
-        <button mat-icon-button matSuffix (click)="fileInput.click()">
-          <mat-icon>attach_file</mat-icon>
-        </button>
-      </mat-form-field>
-      <div *ngIf="file" class="mt-2">
-        <mat-chip color="primary">
-          {{ file.name }}
-          <mat-icon matChipRemove (click)="removeFile()">close</mat-icon>
-        </mat-chip>
-        <mat-chip color="primary">
-         Rozmiar: {{ file.size / 1024 | number:'1.0-2' }} kB
-          <mat-icon matChipRemove (click)="removeFile()">close</mat-icon>
-        </mat-chip>
-      </div>
-      <div>
-        <button mat-button matStepperNext>Następne</button>
-      </div>
-    </form>
-  </mat-step>
-  <mat-step>
-    <form>
-      <ng-template matStepLabel>Podaj pozostałe dane</ng-template>
-      <ngt-canvas [sceneGraph]="sceneGraph" />
-    </form>
-  </mat-step>
-</mat-stepper>
+<form (ngSubmit)="onSubmit()" [formGroup]="uploadForm" class="upload-container">
+
+  <h2 class="form-title">Upload STL file</h2>
+
+  <!-- WYBÓR PLIKU -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Pick STL file</mat-label>
+
+    <input
+      type="file"
+      hidden
+      (change)="onFileSelected($event)"
+      accept=".stl"
+      #fileInput
+    />
+
+    <input
+      matInput
+      [value]="fileName"
+      placeholder="Wybierz plik"
+      readonly
+      (click)="fileInput.click()"
+    />
+
+    <button mat-icon-button matSuffix (click)="fileInput.click()" type="button">
+      <mat-icon>attach_file</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <!-- INFORMACJE O WYBRANYM PLIKU -->
+  <div *ngIf="file" class="file-info">
+    <mat-chip color="primary" selected>
+      {{ file.name }}
+      <mat-icon matChipRemove (click)="removeFile()">close</mat-icon>
+    </mat-chip>
+    <mat-chip color="primary" selected>
+      Size: {{ (file.size / 1024) | number:'1.0-2' }} kB
+      <mat-icon matChipRemove (click)="removeFile()">close</mat-icon>
+    </mat-chip>
+  </div>
+
+  <!-- WYPEŁNIENIE -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Fill (0.01 - 1.0)</mat-label>
+    <input matInput type="number" formControlName="printFill" step="0.01" min="0.01" max="1.0">
+    <mat-error *ngIf="uploadForm.get('printFill')?.invalid">from 0.01 to 1.0</mat-error>
+  </mat-form-field>
+
+  <!-- PRZYCISK WYŚLIJ -->
+  <div class="submit-container">
+    <button mat-raised-button color="primary" type="submit" [disabled]="uploadForm.invalid || !file || isLoading">
+      Upload
+    </button>
+  </div>
+  <mat-progress-bar class="progress-bar" *ngIf="isLoading" mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+
+</form>

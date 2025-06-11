@@ -3,16 +3,17 @@ from django.core.validators import MinValueValidator
 import uuid
 from datetime import timedelta
 
+from core.models import AuditModel
 from prints.models import Model3D
 from accounts.models import Address, User
 
-class ShipmentType(models.Model):
+class ShipmentType(AuditModel):
     shipment_type_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, null=False)
     shipment_type = models.CharField(max_length=100, null=False, blank=False)
     shipment_cost = models.FloatField(validators=[MinValueValidator(0.01)], null=False, blank=False)
 
 
-class Order(models.Model):
+class Order(AuditModel):
     class OrderStatus(models.TextChoices):
         PAYMENT = 'PAYMENT', 'Payment'
         PAID = 'PAID', 'Paid'
@@ -31,7 +32,7 @@ class Order(models.Model):
 
 
 
-class OrderPrint(models.Model):
+class OrderPrint(AuditModel):
     class PrintMaterials(models.TextChoices):
         PETG = 'PETG', 'PETG'
         PLA = 'PLA', 'PLA'

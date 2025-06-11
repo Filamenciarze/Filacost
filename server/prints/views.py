@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 import requests
 
 from prints.models import Model3D
-from prints.serializers import Model3DSerializer
+from prints.serializers import Model3DUploadSerializer, Model3DItemListSerializer
 
 
 class Model3DView(APIView):
@@ -29,7 +29,7 @@ class Model3DView(APIView):
     def post(self, request):
         data = request.data.copy()
         data["user"] = request.user.id
-        serializer = Model3DSerializer(data=data)
+        serializer = Model3DUploadSerializer(data=data)
         if serializer.is_valid():
             model = serializer.save()
             cost = self._slicer_request(model)
@@ -57,12 +57,12 @@ class Model3DView(APIView):
             }
             response = requests.post(slicer_url, files=files)
             cost = json.loads(response.text)
-            cost['cost'] += cost['est_time_seconds']/3600*1.11*0.7
+            cost['cost'] += cost['est_time_seconds']/3600*1.11*0.7 # /hours * power cost (1kWh) * printer power scale (700W)
             return cost
 
 class Model3DListView(ListAPIView):
-    serializer_class = Model3DSerializer
+    serializer_class = Model3DItemListSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Model3D.objects.filter(user=self.request.user).order_by('-id')
+        return Model3D.objects.filter(user=self.request.user).order_by('-print_id')
