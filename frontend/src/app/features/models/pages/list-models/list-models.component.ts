@@ -1,5 +1,5 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {DatePipe, DecimalPipe, NgForOf, NgIf} from '@angular/common';
+import {CurrencyPipe, DatePipe, DecimalPipe, NgForOf, NgIf} from '@angular/common';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +14,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {DeleteModelDialogComponent} from '../../components/delete-model-dialog/delete-model-dialog.component';
 import {BaseModel3D} from '../../interfaces/BaseModel3D';
 import {PageableModel3D} from '../../interfaces/PageableModel3D';
+import {DurationFormatPipe} from '../../../../shared/utilities/pipes/duration-format.pipe';
 
 @Component({
   selector: 'app-list-models',
@@ -32,7 +33,9 @@ import {PageableModel3D} from '../../interfaces/PageableModel3D';
     DatePipe,
     DecimalPipe,
     NgForOf,
-    NgIf
+    NgIf,
+    CurrencyPipe,
+    DurationFormatPipe
   ]
 })
 export class ListModelsComponent implements OnInit {

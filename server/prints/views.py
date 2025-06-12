@@ -8,9 +8,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import requests
+import math
 
 from prints.models import Model3D
-from prints.serializers import Model3DUploadSerializer, Model3DItemListSerializer
+from prints.serializers import Model3DUploadSerializer, Model3DItemListSerializer, Model3DFullSerializer
 
 
 class Model3DView(APIView):
@@ -32,9 +33,20 @@ class Model3DView(APIView):
         serializer = Model3DUploadSerializer(data=data)
         if serializer.is_valid():
             model = serializer.save()
-            cost = self._slicer_request(model)
-            return Response(cost, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            sliced = self._slicer_request(model)
+            model.print_cost = sliced['cost']
+            model.print_time_s = sliced['est_time_seconds']
+            model.save()
+
+            full_serializer = Model3DFullSerializer(data=model)
+            if full_serializer.is_valid():
+                full_serializer.save()
+                return Response(sliced, status=status.HTTP_201_CREATED)
+            else:
+                return Response(full_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
         model_id = request.GET.get('id')
@@ -58,6 +70,7 @@ class Model3DView(APIView):
             response = requests.post(slicer_url, files=files)
             cost = json.loads(response.text)
             cost['cost'] += cost['est_time_seconds']/3600*1.11*0.7 # /hours * power cost (1kWh) * printer power scale (700W)
+            cost['cost'] += 0.1*35*math.ceil(cost['est_time_seconds']/3600) # 1/4 * cost of work hour
             return cost
 
 class Model3DListView(ListAPIView):

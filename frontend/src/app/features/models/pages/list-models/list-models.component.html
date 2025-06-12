@@ -21,6 +21,8 @@
       <mat-card-content>
         <p>Data uploadu: {{ model.created_at | date:'short' }}</p>
         <p>Wypełnienie: {{ model.print_fill }}</p>
+        <p>Koszt wydruku: {{ model.print_cost | currency:'PLN':'symbol':'1.2-2' }}</p>
+        <p>Czas wydruku: {{ model.print_time_s | durationFormat}}</p>
       </mat-card-content>
       <mat-card-actions align="end">
         <button mat-icon-button color="warn" aria-label="Delete">
@@ -35,6 +37,7 @@
       </mat-card-actions>
     </mat-card>
   </div>
+
 
   <!-- Szablon na brak modeli -->
   <ng-template #noModels>

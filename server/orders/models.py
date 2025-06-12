@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 import uuid
 from datetime import timedelta
 
+from core import settings
 from core.models import AuditModel
 from prints.models import Model3D
 from accounts.models import Address, User
@@ -12,6 +13,10 @@ class ShipmentType(AuditModel):
     shipment_type = models.CharField(max_length=100, null=False, blank=False)
     shipment_cost = models.FloatField(validators=[MinValueValidator(0.01)], null=False, blank=False)
 
+class PrintMaterials(models.TextChoices):
+    PETG = 'PETG', 'PETG'
+    PLA = 'PLA', 'PLA'
+    ABS = 'ABS', 'ABS'
 
 class Order(AuditModel):
     class OrderStatus(models.TextChoices):
@@ -28,18 +33,22 @@ class Order(AuditModel):
     shipment_type = models.ForeignKey(ShipmentType, on_delete=models.SET_NULL, null=True)
     order_status = models.CharField(choices=OrderStatus.choices, default=OrderStatus.PAYMENT, max_length=10, null=False,
                                     blank=False)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
-
-
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
 
 class OrderPrint(AuditModel):
-    class PrintMaterials(models.TextChoices):
-        PETG = 'PETG', 'PETG'
-        PLA = 'PLA', 'PLA'
-        ABS = 'ABS', 'ABS'
-
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
     model3d = models.ForeignKey(Model3D, on_delete=models.CASCADE, null=True)
     material = models.CharField(choices=PrintMaterials.choices, max_length=5, null=False, blank=False)
     quantity = models.PositiveIntegerField(default=1, null=False, blank=False)
     print_time_estimation = models.DurationField(default=timedelta, null=False, blank=False)
+
+
+class Cart(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    model3d = models.ForeignKey(Model3D, on_delete=models.CASCADE)
+    material = models.CharField(max_length=5, choices=PrintMaterials.choices)
+    quantity = models.PositiveIntegerField(default=1)

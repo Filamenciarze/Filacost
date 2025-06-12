@@ -14,3 +14,5 @@ class Model3D(AuditModel):
     filename = models.CharField(max_length=150, null=False, blank=False, default=generate_filename, unique=True)
     file = models.FileField(upload_to="stl_files/")
     print_fill = models.FloatField(validators=[MinValueValidator(0.01), MaxValueValidator(1.0)])
+    print_cost = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False, default=0)
+    print_time_s = models.IntegerField(validators=[MinValueValidator(1)], default=1)

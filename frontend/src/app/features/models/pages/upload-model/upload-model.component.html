@@ -52,6 +52,16 @@
       Upload
     </button>
   </div>
-  <mat-progress-bar class="progress-bar" *ngIf="isLoading" mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+  <!-- Uploading file -->
+  <div *ngIf="isLoading && uploadProgress < 100">
+    <mat-progress-bar class="progress-bar" mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+    <div class="progress-label">Uploading File... {{ uploadProgress }}%</div>
+  </div>
+
+  <!-- Processing file -->
+  <div *ngIf="uploadProgress == 100">
+    <mat-progress-bar class="progress-bar" mode="indeterminate"></mat-progress-bar>
+    <div class="progress-label">Processing File...</div>
+  </div>
 
 </form>
