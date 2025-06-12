@@ -1,15 +1,19 @@
-import {Component, OnInit} from '@angular/core';
-import {DatePipe, DecimalPipe, NgForOf} from '@angular/common';
+import {Component, inject, OnInit} from '@angular/core';
+import {DatePipe, DecimalPipe, NgForOf, NgIf} from '@angular/common';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {ListModelsService} from '../../services/list-models/list-models.service';
-import {PageableModel3D} from '../../interfaces/ExtendedModel3D';
+import {finalize} from 'rxjs';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
+import {DeleteModelDialogComponent} from '../../components/delete-model-dialog/delete-model-dialog.component';
 import {BaseModel3D} from '../../interfaces/BaseModel3D';
+import {PageableModel3D} from '../../interfaces/PageableModel3D';
 
 @Component({
   selector: 'app-list-models',
@@ -27,58 +31,59 @@ import {BaseModel3D} from '../../interfaces/BaseModel3D';
     RouterLink,
     DatePipe,
     DecimalPipe,
-    NgForOf
+    NgForOf,
+    NgIf
   ]
 })
 export class ListModelsComponent implements OnInit {
 
-  models!: PageableModel3D;
-  pagedModels!: BaseModel3D[];
+  models: any = {} as PageableModel3D; //PageableModel3D
+  currentPage: number = 1;
+  totalPages: number = 1;
 
-  currentPage = 1;
-  pageSize = 6; // ilość modeli na stronę
-  totalPages = 1;
+  _snackBar = inject(MatSnackBar);
+  _dialog = inject(MatDialog);
 
   constructor(
     private listModelsService: ListModelsService,
-  ) {
-  }
+    private router: Router
+  ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadModels();
-
-    this.totalPages = Math.ceil(this.models.count / this.pageSize);
-    this.updatePagedModels();
   }
 
-  loadModels() {
-    this.listModelsService.listModels().subscribe({
-      next: data => {
-        this.models = data;
-      },
-      error: error => {
-        console.log(error);
+  loadModels(): void {
+    this.listModelsService.listModels(this.currentPage).subscribe(response => {
+      this.models = response;
+      this.totalPages = Math.ceil(response.count / response.results.length);
+    });
+  }
+
+  deleteModel(model: BaseModel3D): void {
+    let dialogRef = this._dialog.open(DeleteModelDialogComponent, {
+      data: {id: model.print_id, filename: model.filename_display}
+    })
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this._snackBar.open("Model has been removed");
+        this.models.results = this.models.results.filter((m: BaseModel3D): boolean => m.print_id !== model.print_id);
       }
     })
   }
 
-  updatePagedModels() {
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    this.pagedModels = this.models.results.slice(start, end);
-  }
-
-  nextPage() {
+  nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
-      this.updatePagedModels();
+      this.loadModels();
     }
   }
 
-  prevPage() {
+  prevPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.updatePagedModels();
+      this.loadModels();
     }
   }
 }

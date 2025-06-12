@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatIcon} from '@angular/material/icon';
@@ -10,6 +10,7 @@ import {MatProgressBar} from '@angular/material/progress-bar';
 import {finalize} from 'rxjs';
 import {HttpEvent, HttpEventType} from '@angular/common/http';
 import {Router} from '@angular/router';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-upload-model',
@@ -32,6 +33,7 @@ import {Router} from '@angular/router';
   styleUrl: './upload-model.component.scss'
 })
 export class UploadModelComponent {
+  _snackBar = inject(MatSnackBar)
   uploadForm: FormGroup;
 
   file: File | null = null;
@@ -90,6 +92,7 @@ export class UploadModelComponent {
                 break;
               case HttpEventType.Response:
                 console.log('Upload completed successfully!', event.body);
+                this._snackBar.open("Upload completed successfully!")
                 // Tu możesz dodać np. snackbar z sukcesem
                 break;
             }
