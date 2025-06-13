@@ -44,6 +44,7 @@ class OrderPrint(AuditModel):
 
 
 class Cart(models.Model):
+    cart_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, null=False)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
