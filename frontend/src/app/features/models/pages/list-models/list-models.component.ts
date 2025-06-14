@@ -15,6 +15,7 @@ import {DeleteModelDialogComponent} from '../../components/delete-model-dialog/d
 import {BaseModel3D} from '../../interfaces/BaseModel3D';
 import {PageableModel3D} from '../../interfaces/PageableModel3D';
 import {DurationFormatPipe} from '../../../../shared/utilities/pipes/duration-format.pipe';
+import {AddCartDialogComponent} from '../../../orders/components/add-cart-dialog/add-cart-dialog.component';
 
 @Component({
   selector: 'app-list-models',
@@ -60,6 +61,22 @@ export class ListModelsComponent implements OnInit {
     this.listModelsService.listModels(this.currentPage).subscribe(response => {
       this.models = response;
       this.totalPages = Math.ceil(response.count / response.results.length);
+    });
+  }
+
+  openAddToCartDialog(print_id: string, filename_display: string, print_cost: number) {
+    const dialogRef = this._dialog.open(AddCartDialogComponent, {
+      data: {print_id, filename_display, print_cost},
+      width: '400px',
+      maxWidth: '400px',
+      panelClass: 'add-to-cart-dialog'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Tutaj możesz wysłać dane do API np. CartService.addItemToCart(result)
+        console.log('Dodano do koszyka:', result);
+      }
     });
   }
 

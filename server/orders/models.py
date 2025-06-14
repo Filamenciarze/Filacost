@@ -49,6 +49,7 @@ class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class CartItem(models.Model):
+    cartitem_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, null=False)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     model3d = models.ForeignKey(Model3D, on_delete=models.CASCADE)
     material = models.CharField(max_length=5, choices=PrintMaterials.choices)

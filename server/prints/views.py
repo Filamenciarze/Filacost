@@ -78,4 +78,4 @@ class Model3DListView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Model3D.objects.filter(user=self.request.user).order_by('-print_id')
+        return Model3D.objects.filter(user=self.request.user).order_by('-created_at')

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from orders.models import Cart, CartItem
+from prints.serializers import Model3DItemListSerializer
 
 
 class CartAddSerializer(serializers.ModelSerializer):
@@ -11,4 +12,10 @@ class CartAddSerializer(serializers.ModelSerializer):
 class CartItemAddSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
-        fields = ['model3d', 'material', 'quantity']
+        fields = ['cart','model3d', 'material', 'quantity']
+
+class CartItemListSerializer(serializers.ModelSerializer):
+    model3d = Model3DItemListSerializer(read_only=True)
+    class Meta:
+        model = CartItem
+        fields = ['cartitem_id','model3d', 'quantity', 'material']

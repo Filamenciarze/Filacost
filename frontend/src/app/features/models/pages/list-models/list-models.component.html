@@ -25,7 +25,7 @@
         <p>Czas wydruku: {{ model.print_time_s | durationFormat}}</p>
       </mat-card-content>
       <mat-card-actions align="end">
-        <button mat-icon-button color="warn" aria-label="Delete">
+        <button mat-icon-button color="warn" (click)="openAddToCartDialog(model.print_id, model.filename_display, model.print_cost)" aria-label="Delete">
           <mat-icon>add_shopping_cart</mat-icon>
         </button>
         <button mat-icon-button color="primary" aria-label="Preview">

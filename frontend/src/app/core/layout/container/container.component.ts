@@ -15,6 +15,8 @@ import {UserService} from '../../user/services/user.service';
 import {AuthService} from '../../auth/services/auth.service';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {User} from '../../user/interfaces/user';
+import {CartModalComponent} from '../../../features/orders/components/cart-modal/cart-modal.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-container',
@@ -51,6 +53,7 @@ export class ContainerComponent implements OnInit, OnDestroy{
     private breakpointObserver: BreakpointObserver,
     private userService: UserService,
     private authService: AuthService,
+    private dialog: MatDialog
   ) {
     this.isHandset$ = this.breakpointObserver.observe(Breakpoints.Handset)
       .pipe(
@@ -67,6 +70,13 @@ export class ContainerComponent implements OnInit, OnDestroy{
       console.log(user);
       this.user = user;
     })
+  }
+
+  openCart() {
+    this.dialog.open(CartModalComponent, {
+      width: '400px',
+      maxWidth: '400px',
+    });
   }
 
   ngOnDestroy() {
