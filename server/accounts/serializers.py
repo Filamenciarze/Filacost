@@ -1,12 +1,12 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from .models import User, Profile
+from .models import User, Profile, Address
+
 
 class ProfileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Profile
-        fields = ['first_name', 'last_name']
+        fields = ['first_name', 'last_name', 'date_of_birth', 'phone_number']
 
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer()
@@ -40,3 +40,16 @@ class LoginSerializer(serializers.Serializer):
         if user and user.is_active:
             return user
         raise serializers.ValidationError("Invalid credentials")
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = [
+            'address_id',
+            'street_number',
+            'street',
+            'zipcode',
+            'city',
+            'state',
+            'country'
+        ]

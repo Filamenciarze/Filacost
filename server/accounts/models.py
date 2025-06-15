@@ -48,7 +48,7 @@ class Profile(AuditModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    date_of_birth = models.DateField(validators=[MaxValueValidator(date.today)], blank=True)
+    date_of_birth = models.DateField(validators=[MaxValueValidator(date.today)], blank=True, null=True)
     phone_number = PhoneNumberField(blank=True, region='PL')
 
     def __str__(self):

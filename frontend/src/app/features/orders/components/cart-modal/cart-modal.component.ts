@@ -9,6 +9,8 @@ import {MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '
 import {MatLine} from '@angular/material/core';
 import {MatIcon} from '@angular/material/icon';
 import {CartItem} from '../../interfaces/cart-item';
+import {DialogRef} from '@angular/cdk/dialog';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-cart-modal',
@@ -40,7 +42,8 @@ export class CartModalComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
-
+    private dialogRef: DialogRef<CartModalComponent>,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -59,10 +62,11 @@ export class CartModalComponent implements OnInit {
   }
 
   goToCheckout() {
-
+    this.router.navigateByUrl('checkout').then(close)
   }
 
   close() {
+    this.dialogRef.close()
   }
 
   removeFromCart(cartitem_id: string) {

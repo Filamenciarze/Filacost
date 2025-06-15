@@ -8,8 +8,11 @@ from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
 from environs import Env
 from rest_framework_simplejwt.views import TokenRefreshView
-from rest_framework import status
-from accounts.serializers import RegisterSerializer, UserSerializer, LoginSerializer
+from rest_framework import status, generics
+
+from accounts.models import Profile, Address
+from accounts.serializers import RegisterSerializer, UserSerializer, LoginSerializer, ProfileSerializer, \
+    AddressSerializer
 
 env = Env()
 env.read_env("../.env")
@@ -112,3 +115,90 @@ class LogoutView(APIView):
         response.delete_cookie(key='access_token')
         response.delete_cookie(key='refresh_token')
         return response
+
+class ProfileRetrieveUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        profile, created = Profile.objects.get_or_create(user=request.user)
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+
+    def put(self, request):
+        profile, created = Profile.objects.get_or_create(user=request.user)
+        serializer = ProfileSerializer(profile, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def patch(self, request):
+        profile, created = Profile.objects.get_or_create(user=request.user)
+        serializer = ProfileSerializer(profile, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+# Address LIST + CREATE
+class AddressListCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        addresses = Address.objects.filter(user=request.user)
+        serializer = AddressSerializer(addresses, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = AddressSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+# Address UPDATE (body-based)
+class AddressUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        address_id = request.data.get("address_id")
+        if not address_id:
+            raise ValidationError({"address_id": "This field is required."})
+
+        try:
+            address = Address.objects.get(address_id=address_id, user=request.user)
+        except Address.DoesNotExist:
+            return Response({"detail": "Address not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = AddressSerializer(address, data=request.data, partial=False)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def patch(self, request):
+        address_id = request.data.get("address_id")
+        if not address_id:
+            raise ValidationError({"address_id": "This field is required."})
+
+        try:
+            address = Address.objects.get(address_id=address_id, user=request.user)
+        except Address.DoesNotExist:
+            return Response({"detail": "Address not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = AddressSerializer(address, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+class AddressDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        address_id = request.data.get("address_id")
+        if not address_id:
+            raise ValidationError({"address_id": "This field is required."})
+
+        try:
+            address = Address.objects.get(address_id=address_id, user=request.user)
+        except Address.DoesNotExist:
+            return Response({"detail": "Address not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        address.delete()
+        return Response({"detail": "Address deleted successfully."}, status=status.HTTP_204_NO_CONTENT)

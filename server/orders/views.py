@@ -1,15 +1,17 @@
 import uuid
 
+from django.db import transaction
 from django.http import Http404
-from rest_framework import status
+from rest_framework import status, generics
 
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from orders.models import Cart, CartItem, PrintMaterials
-from orders.serializers import CartItemAddSerializer, CartItemListSerializer
+from orders.models import Cart, CartItem, PrintMaterials, OrderPrint, Order, ShipmentType
+from orders.serializers import CartItemAddSerializer, CartItemListSerializer, OrderSerializer, CreateOrderSerializer, \
+    ShipmentTypeSerializer
 from prints.models import Model3D
 
 from django.db.models import F
@@ -112,4 +114,76 @@ class CartListView(ListAPIView):
         except Cart.DoesNotExist:
             return CartItem.objects.none()
 
+class UserOrdersListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderSerializer
 
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user).order_by('-created_at')
+
+
+class OrderDetailView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderSerializer
+    lookup_field = 'order_id'
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
+
+
+class CreateOrderFromCartView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request):
+        serializer = CreateOrderSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+
+        try:
+            cart = Cart.objects.get(user=user)
+            cart_items = CartItem.objects.filter(cart=cart)
+            if not cart_items.exists():
+                return Response({"detail": "Cart is empty."}, status=status.HTTP_400_BAD_REQUEST)
+        except Cart.DoesNotExist:
+            return Response({"detail": "Cart does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+        total_cost = sum(item.model3d.print_cost * item.quantity for item in cart_items)
+        total_cost += serializer.validated_data['shipment_type'].shipment_cost
+
+        order = Order.objects.create(
+            user=user,
+            shipping_address=serializer.validated_data['shipping_address'],
+            shipment_type=serializer.validated_data['shipment_type'],
+            total_cost=total_cost
+        )
+
+        for item in cart_items:
+            OrderPrint.objects.create(
+                order=order,
+                model3d=item.model3d,
+                material=item.material,
+                quantity=item.quantity,
+                print_time_estimation=item.model3d.print_time_s
+            )
+
+        cart_items.delete()
+
+        return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+
+
+class ShipmentTypeView(APIView):
+    permission_classes = [IsAuthenticated]  # lub np. tylko dla adminów
+
+
+    def get(self, request):
+        shipment_types = ShipmentType.objects.all()
+        serializer = ShipmentTypeSerializer(shipment_types, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = ShipmentTypeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

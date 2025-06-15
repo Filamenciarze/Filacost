@@ -38,13 +38,10 @@
           <mat-icon>shopping_cart</mat-icon>
           Cart
         </button>
-        <button *ngIf="isAuthenticated" mat-button [matMenuTriggerFor]="menu" color="primary" class="">
+        <button *ngIf="isAuthenticated" mat-button routerLink="profile" color="primary" class="">
           <mat-icon>person</mat-icon>
           Account
         </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item>Personal data</button>
-        </mat-menu>
         <button *ngIf="isAuthenticated" mat-button color="primary" class="" (click)="logout()">
           <mat-icon>logout</mat-icon>
           Logout
