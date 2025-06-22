@@ -32,7 +32,6 @@ import {AddCartDialogComponent} from '../../../orders/components/add-cart-dialog
     MatButtonToggle,
     RouterLink,
     DatePipe,
-    DecimalPipe,
     NgForOf,
     NgIf,
     CurrencyPipe,

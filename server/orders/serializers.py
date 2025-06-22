@@ -61,7 +61,7 @@ class CreateOrderSerializer(serializers.Serializer):
         user = self.context['request'].user
 
         try:
-            data['shipping_address'] = Address.objects.get(id=data['shipping_address_id'], user=user)
+            data['shipping_address'] = Address.objects.get(address_id=data['shipping_address_id'], user=user)
         except Address.DoesNotExist:
             raise serializers.ValidationError("Invalid shipping address.")
 

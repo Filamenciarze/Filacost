@@ -14,6 +14,7 @@ import {
   MatTable
 } from '@angular/material/table';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {PageableOrder} from '../../interfaces/pageable-order';
 
 @Component({
   selector: 'app-order-list',
@@ -40,7 +41,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 })
 export class OrderListComponent implements OnInit {
 
-  orders: Order[] = []
+  orders: PageableOrder = {} as PageableOrder;
   loading = true;
   displayedColumns: string[] = ['order_id', 'order_status', 'total_cost', 'shipment_type', 'created_at'];
 
@@ -58,6 +59,7 @@ export class OrderListComponent implements OnInit {
     this.orderService.getOrders().subscribe({
       next: (data) => {
         this.orders = data;
+        console.log(data)
         this.loading = false;
       },
       error: () => {

@@ -6,6 +6,6 @@ export interface Order {
   total_cost: string;
   shipping_address: string;
   shipment_type: ShipmentType;
-  ordered_models: any[]; // możesz stworzyć OrderPrint interface dla szczegółów modeli
+  ordered_models: any[];
   created_at: string;
 }

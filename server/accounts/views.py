@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import CreateAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.exceptions import AuthenticationFailed, ExpiredTokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from environs import Env
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -62,6 +62,7 @@ class LoginView(APIView):
                 key='access_token',
                 value=str(tokens['access']),
                 httponly=True,
+                max_age=1000 * 60 * 5,
                 secure=secure_cookie,
                 samesite='Strict',
             )
@@ -71,6 +72,7 @@ class LoginView(APIView):
                 value=str(tokens['refresh']),
                 httponly=True,
                 secure=secure_cookie,
+                max_age=1000 * 60 * 60 * 2,
                 samesite='Strict',
             )
 
@@ -97,7 +99,13 @@ class CookieTokenRefreshView(TokenRefreshView):
             return Response({'detail': 'No refresh token found'}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data={'refresh': refresh_token})
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except ExpiredTokenError as e:
+            response = Response({"detail": "refresh token is expired"}, status=200)
+            response.delete_cookie('refresh_token')
+            response.delete_cookie('access_token')
+            return response
 
         response = Response({"detail": "token has been refreshed"}, status=200)
         response.set_cookie(
@@ -110,6 +118,8 @@ class CookieTokenRefreshView(TokenRefreshView):
         return response
 
 class LogoutView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         response = Response({"detail": "Logged out"}, status=status.HTTP_200_OK)
         response.delete_cookie(key='access_token')

@@ -1,13 +1,13 @@
-<h2 mat-dialog-title>Dodaj do koszyka</h2>
+<h2 mat-dialog-title>Add to cart</h2>
 
 <mat-dialog-content>
   <p><strong>{{ data.filename_display }}</strong></p>
-  <p>Cena za sztukę: {{ data.print_cost | currency }}</p>
+  <p>price per piece: {{ data.print_cost | currency }}</p>
 
   <form [formGroup]="form" class="dialog-form">
 
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Materiał</mat-label>
+      <mat-label>Material</mat-label>
       <mat-select formControlName="material">
         <mat-option *ngFor="let material of materials" [value]="material">
           {{ material }}
@@ -16,7 +16,7 @@
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Ilość</mat-label>
+      <mat-label>Count</mat-label>
       <input matInput type="number" formControlName="quantity" min="1">
     </mat-form-field>
 
@@ -24,8 +24,8 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="close()">Anuluj</button>
+  <button mat-button (click)="close()">Cancel</button>
   <button mat-raised-button color="primary" (click)="submit()" [disabled]="form.invalid">
-    Dodaj do koszyka
+    Add to Cart
   </button>
 </mat-dialog-actions>

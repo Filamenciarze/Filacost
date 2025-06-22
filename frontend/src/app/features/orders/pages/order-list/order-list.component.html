@@ -5,8 +5,8 @@
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
   </div>
 
-  <div *ngIf="!loading && orders.length > 0">
-    <table mat-table [dataSource]="orders" class="mat-elevation-z8">
+  <div *ngIf="!loading && orders.count > 0">
+    <table mat-table [dataSource]="orders.results" class="mat-elevation-z8">
 
       <!-- Order ID Column -->
       <ng-container matColumnDef="order_id">
@@ -43,7 +43,7 @@
     </table>
   </div>
 
-  <div *ngIf="!loading && orders.length === 0">
+  <div *ngIf="!loading && orders.count === 0">
     <p>No orders found.</p>
   </div>
 </mat-card>

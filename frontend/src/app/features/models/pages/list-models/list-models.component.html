@@ -19,10 +19,10 @@
         <mat-card-title>{{ model.filename_display }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <p>Data uploadu: {{ model.created_at | date:'short' }}</p>
-        <p>Wypełnienie: {{ model.print_fill }}</p>
-        <p>Koszt wydruku: {{ model.print_cost | currency:'PLN':'symbol':'1.2-2' }}</p>
-        <p>Czas wydruku: {{ model.print_time_s | durationFormat}}</p>
+        <p>Upload Date: {{ model.created_at | date:'short' }}</p>
+        <p>Fill: {{ model.print_fill }}</p>
+        <p>Print Cost: {{ model.print_cost | currency:'PLN':'symbol':'1.2-2' }}</p>
+        <p>Estimated Print Time: {{ model.print_time_s | durationFormat}}</p>
       </mat-card-content>
       <mat-card-actions align="end">
         <button mat-icon-button color="warn" (click)="openAddToCartDialog(model.print_id, model.filename_display, model.print_cost)" aria-label="Delete">
@@ -42,7 +42,7 @@
   <!-- Szablon na brak modeli -->
   <ng-template #noModels>
     <div class="no-models">
-      <p>Brak modeli do wyświetlenia.</p>
+      <p>No models found.</p>
     </div>
   </ng-template>
 

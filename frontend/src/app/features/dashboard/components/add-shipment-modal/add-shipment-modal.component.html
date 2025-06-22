@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>Add Shipment Type</h2>
+
+<mat-dialog-content [formGroup]="form" class="dialog-content">
+
+  <!-- Shipment Type Field -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Name</mat-label>
+    <input matInput formControlName="shipment_type" required>
+    <mat-error *ngIf="form.get('shipment_type')?.hasError('required')">
+      Name is required.
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Shipment Cost Field -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Cost (PLN)</mat-label>
+    <input matInput type="number" formControlName="shipment_cost" required>
+    <mat-error *ngIf="form.get('shipment_cost')?.hasError('required')">
+      Cost is required.
+    </mat-error>
+    <mat-error *ngIf="form.get('shipment_cost')?.hasError('min')">
+      Cost must be at least 0.
+    </mat-error>
+  </mat-form-field>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">Add</button>
+</mat-dialog-actions>

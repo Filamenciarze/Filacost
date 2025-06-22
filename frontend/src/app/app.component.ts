@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ContainerComponent} from './core/layout/container/container.component';
 import {UserService} from './core/user/services/user.service';
+import {User} from './core/user/interfaces/user';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +23,7 @@ export class AppComponent implements OnInit {
       },
       error:(status) => {
         this.userService.remove_authentication();
-        this.userService.setUserData(null)
+        this.userService.setUserData({role: "USER"} as User)
       }
     });
   }

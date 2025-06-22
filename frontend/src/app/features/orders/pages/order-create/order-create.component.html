@@ -46,6 +46,7 @@
         <mat-option *ngFor="let address of addresses" [value]="address.address_id">
           {{ address.street_number }} {{ address.street }}, {{ address.city }}
         </mat-option>
+        <mat-option *ngIf="!addresses.length">No addresses provided!</mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -55,6 +56,7 @@
         <mat-option *ngFor="let shipment of shipmentTypes" [value]="shipment.shipment_type_id">
           {{ shipment.shipment_type }} ({{ shipment.shipment_cost | currency:'PLN' }})
         </mat-option>
+        <mat-option *ngIf="!addresses.length">No type of shipment provided! Contact with administration</mat-option>
       </mat-select>
     </mat-form-field>
 

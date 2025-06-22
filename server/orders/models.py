@@ -11,20 +11,21 @@ from accounts.models import Address, User
 class ShipmentType(AuditModel):
     shipment_type_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, null=False)
     shipment_type = models.CharField(max_length=100, null=False, blank=False)
-    shipment_cost = models.FloatField(validators=[MinValueValidator(0.01)], null=False, blank=False)
+    shipment_cost = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)], null=False, blank=False)
 
 class PrintMaterials(models.TextChoices):
     PETG = 'PETG', 'PETG'
     PLA = 'PLA', 'PLA'
     ABS = 'ABS', 'ABS'
 
+class OrderStatus(models.TextChoices):
+    PAYMENT = 'PAYMENT', 'Payment'
+    PAID = 'PAID', 'Paid'
+    SHIPPED = 'SHIPPED', 'Shipped'
+    DELIVERED = 'DELIVERED', 'Delivered'
+    CANCELLED = 'CANCELLED', 'Cancelled'
+
 class Order(AuditModel):
-    class OrderStatus(models.TextChoices):
-        PAYMENT = 'PAYMENT', 'Payment'
-        PAID = 'PAID', 'Paid'
-        SHIPPED = 'SHIPPED', 'Shipped'
-        DELIVERED = 'DELIVERED', 'Delivered'
-        CANCELLED = 'CANCELLED', 'Cancelled'
 
     order_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, null=False)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)

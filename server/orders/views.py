@@ -1,14 +1,16 @@
 import uuid
+from datetime import timedelta
 
 from django.db import transaction
 from django.http import Http404
 from rest_framework import status, generics
 
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from accounts.permissions import ManagerPermission
 from orders.models import Cart, CartItem, PrintMaterials, OrderPrint, Order, ShipmentType
 from orders.serializers import CartItemAddSerializer, CartItemListSerializer, OrderSerializer, CreateOrderSerializer, \
     ShipmentTypeSerializer
@@ -114,6 +116,14 @@ class CartListView(ListAPIView):
         except Cart.DoesNotExist:
             return CartItem.objects.none()
 
+
+class AllOrdersListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated, ManagerPermission]
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        return Order.objects.all().order_by('-created_at')
+
 class UserOrdersListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
@@ -165,7 +175,7 @@ class CreateOrderFromCartView(APIView):
                 model3d=item.model3d,
                 material=item.material,
                 quantity=item.quantity,
-                print_time_estimation=item.model3d.print_time_s
+                print_time_estimation=timedelta(seconds=item.model3d.print_time_s)
             )
 
         cart_items.delete()
@@ -174,7 +184,7 @@ class CreateOrderFromCartView(APIView):
 
 
 class ShipmentTypeView(APIView):
-    permission_classes = [IsAuthenticated]  # lub np. tylko dla adminów
+    permission_classes = [IsAuthenticated]
 
 
     def get(self, request):
@@ -183,7 +193,38 @@ class ShipmentTypeView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
+        if not ManagerPermission().has_permission(request, self):
+            return Response({'detail': 'Permission denied.'},
+                            status=status.HTTP_403_FORBIDDEN)
         serializer = ShipmentTypeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def put(self, request):
+        if not ManagerPermission().has_permission(request, self):
+            return Response({'detail': 'Permission denied.'}, status=status.HTTP_403_FORBIDDEN)
+
+        shipment_type_id = request.data.get('shipment_type_id')
+        if not shipment_type_id:
+            return Response({'detail': 'ID is required for update.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        shipment_type = get_object_or_404(ShipmentType, pk=shipment_type_id)
+        serializer = ShipmentTypeSerializer(shipment_type, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request):
+        if not ManagerPermission().has_permission(request, self):
+            return Response({'detail': 'Permission denied.'}, status=status.HTTP_403_FORBIDDEN)
+
+        shipment_type_id = request.data.get('id')
+        if not shipment_type_id:
+            return Response({'detail': 'ID is required for deletion.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        shipment_type = get_object_or_404(ShipmentType, pk=shipment_type_id)
+        shipment_type.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+

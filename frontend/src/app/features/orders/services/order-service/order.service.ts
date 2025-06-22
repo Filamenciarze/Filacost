@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import {ShipmentType} from '../../interfaces/shipment-type';
 import {AppSettingsService} from '../../../../shared/utilities/services/app-settings/app-settings.service';
 import {Order} from '../../interfaces/order'
+import {PageableOrder} from '../../interfaces/pageable-order';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,8 @@ export class OrderService {
     private http: HttpClient
   ) { }
 
-  getOrders(): Observable<Order[]> {
-    return this.http.get<Order[]>(AppSettingsService.API_URL+ '/order/list/');
+  getOrders(): Observable<PageableOrder> {
+    return this.http.get<PageableOrder>(AppSettingsService.API_URL+ '/order/list/');
   }
 
   getOrderDetails(order_id: string): Observable<Order> {

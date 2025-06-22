@@ -129,17 +129,32 @@ export class ProfileDetailsComponent implements OnInit {
           this.snackBar.open('Failed to delete address.', 'Close', { duration: 3000 });
         }
       });
-    }
+  }
+
+  private isProfileEmpty(profile: Profile): boolean {
+    return profile.last_name === "" || profile.last_name === "" || profile.date_of_birth === "" ||
+      profile.phone_number === "";
+  }
 
   createProfile(profileData: any) {
-    this.profileService.updateProfile(profileData).subscribe(response => {
-      this.loadProfile(); // załaduj na nowo dane
+    this.profileService.updateProfile(profileData).subscribe({
+      next: response => {
+        this.loadProfile();
+      },
+      error: err => {
+        this.snackBar.open(`Failed to create profile: ${err}`, 'Close', { duration: 3000 });
+      }
     });
   }
 
   updateProfile(profileData: any) {
-    this.profileService.updateProfile(profileData).subscribe(response => {
-      this.loadProfile(); // załaduj na nowo dane
+    this.profileService.updateProfile(profileData).subscribe({
+      next: response => {
+        this.loadProfile();
+      },
+      error: err => {
+        this.snackBar.open(`Failed to update profile: ${err.details}`, 'Close', { duration: 3000 });
+      }
     });
   }
 }

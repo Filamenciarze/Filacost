@@ -1,7 +1,7 @@
 import requests
-from celery import shared_task
+from accounts.celery import shared_task
 from django.conf import settings
-from .models import DockerProcessingJob
+from accounts.models import DockerProcessingJob
 import os
 
 SLICER_URL = getattr(settings, "SLICER_API_URL", "https://slicer-service/slice")

@@ -17,10 +17,67 @@
             </mat-card-title>
           </mat-card-header>
           <mat-card-content class="dashboard-card-content">
-            <div>Card Content Here</div>
+            <ng-container [ngTemplateOutlet]="getTemplate(card.type)"></ng-container>
           </mat-card-content>
         </mat-card>
       </mat-grid-tile>
     }
   </mat-grid-list>
 </div>
+
+
+<ng-template #orders>
+orders
+</ng-template>
+<ng-template #sales>
+sales
+</ng-template>
+<ng-template #settings>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-subtitle>
+        Shipment Type
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="mat-elevation-z2">
+        <table mat-table [dataSource]="shipmentTypes" class="mat-table">
+
+          <!-- ID Column -->
+          <ng-container matColumnDef="Name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let element">{{ element.shipment_type }}</td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="Cost">
+            <th mat-header-cell *matHeaderCellDef>Cost</th>
+            <td mat-cell *matCellDef="let element">{{ element.shipment_cost | currency : 'PLN' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="Actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button color="primary" (click)="editShipmentType(element)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="primary" (click)="deleteShipmentType(element)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <!-- Header & Row Definitions -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        </table>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button (click)="addShipmentType()">
+        Add Shipment Type
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</ng-template>

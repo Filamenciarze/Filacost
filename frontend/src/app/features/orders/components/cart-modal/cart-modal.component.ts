@@ -2,13 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {PageableCartItem} from '../../interfaces/pageable-cart-item';
 import {CartService} from '../../services/cart-service/cart.service';
 import {CurrencyPipe, NgForOf, NgIf} from '@angular/common';
-import {MatDivider, MatList, MatListItem} from '@angular/material/list';
+import {MatDivider} from '@angular/material/list';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
-import {MatButton, MatIconButton, MatMiniFabButton} from '@angular/material/button';
-import {MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
-import {MatLine} from '@angular/material/core';
+import {MatButton, MatMiniFabButton} from '@angular/material/button';
+import {MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
 import {MatIcon} from '@angular/material/icon';
-import {CartItem} from '../../interfaces/cart-item';
 import {DialogRef} from '@angular/cdk/dialog';
 import {Router} from '@angular/router';
 
@@ -16,8 +14,6 @@ import {Router} from '@angular/router';
   selector: 'app-cart-modal',
   imports: [
     NgIf,
-    MatList,
-    MatListItem,
     NgForOf,
     CurrencyPipe,
     MatProgressSpinner,
@@ -26,8 +22,6 @@ import {Router} from '@angular/router';
     MatDialogContent,
     MatDialogActions,
     MatDivider,
-    MatLine,
-    MatIconButton,
     MatIcon,
     MatMiniFabButton
   ],
@@ -62,7 +56,9 @@ export class CartModalComponent implements OnInit {
   }
 
   goToCheckout() {
-    this.router.navigateByUrl('checkout').then(close)
+    this.router.navigateByUrl('checkout').finally(() => {
+      this.close();
+    })
   }
 
   close() {
