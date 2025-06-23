@@ -1,7 +1,7 @@
 import {Component, inject, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { map } from 'rxjs/operators';
-import {AsyncPipe, CurrencyPipe, NgTemplateOutlet} from '@angular/common';
+import {AsyncPipe, CurrencyPipe, DatePipe, NgForOf, NgIf, NgTemplateOutlet} from '@angular/common';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,6 +20,11 @@ import {
 } from '@angular/material/table';
 import {MatDialog} from '@angular/material/dialog';
 import {AddShipmentModalComponent} from './components/add-shipment-modal/add-shipment-modal.component';
+import {OrderManagementService} from './services/order-management/order-management.service';
+import {PageableOrder} from '../orders/interfaces/pageable-order';
+import {Order} from '../orders/interfaces/order';
+import {UpdateStatusModalComponent} from './components/update-status-modal/update-status-modal.component';
+import {DeleteOrderDialogComponent} from './components/delete-order-dialog/delete-order-dialog.component';
 
 enum DashboardElements {
   ORDERS = "orders",
@@ -49,7 +54,10 @@ enum DashboardElements {
     MatRow,
     MatHeaderRowDef,
     MatRowDef,
-    CurrencyPipe
+    CurrencyPipe,
+    DatePipe,
+    NgIf,
+    NgForOf
   ]
 })
 export class DashboardComponent implements OnInit {
@@ -80,9 +88,11 @@ export class DashboardComponent implements OnInit {
 
   shipmentTypes: ShipmentType[] = [];
   displayedColumns: Iterable<string> = ['Name', 'Cost', 'Actions']
+  allOrders: PageableOrder = {} as PageableOrder
 
   constructor(
     private shipmentService: ShipmentService,
+    private orderManagementService: OrderManagementService,
     private dialog: MatDialog,
   ) {
   }
@@ -102,12 +112,21 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadShipmentTypes();
+    this.loadOrders();
   }
 
   loadShipmentTypes() {
     this.shipmentService.getShipmentTypes().subscribe({
       next: value => {
         this.shipmentTypes = value
+      }
+    })
+  }
+
+  loadOrders() {
+    this.orderManagementService.allOrders().subscribe({
+      next: value => {
+        this.allOrders = value;
       }
     })
   }
@@ -143,5 +162,34 @@ export class DashboardComponent implements OnInit {
         this.loadShipmentTypes();
       }
     })
+  }
+
+  viewOrder(order: Order) {
+
+  }
+
+  deleteOrder(order: Order) {
+    this.dialog.open(DeleteOrderDialogComponent).afterClosed().subscribe((result) => {
+      if(result) {
+        this.orderManagementService.deleteOrder(order).subscribe({
+          next: value => {
+            this.loadOrders();
+          }
+        })
+      }
+    })
+  }
+
+  updateStatus(order: Order) {
+    this.dialog.open(UpdateStatusModalComponent, {data: order}).afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this.orderManagementService.updateOrder(result).subscribe({
+            next: value => {
+              this.loadOrders();
+            }
+          })
+        }
+      })
   }
 }

@@ -56,7 +56,7 @@
         <mat-option *ngFor="let shipment of shipmentTypes" [value]="shipment.shipment_type_id">
           {{ shipment.shipment_type }} ({{ shipment.shipment_cost | currency:'PLN' }})
         </mat-option>
-        <mat-option *ngIf="!addresses.length">No type of shipment provided! Contact with administration</mat-option>
+        <mat-option *ngIf="!shipmentTypes.length">No type of shipment provided! Contact with administration</mat-option>
       </mat-select>
     </mat-form-field>
 

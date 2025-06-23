@@ -5,7 +5,7 @@ from django.db import transaction
 from django.http import Http404
 from rest_framework import status, generics
 
-from rest_framework.generics import ListAPIView, get_object_or_404
+from rest_framework.generics import ListAPIView, get_object_or_404, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -123,6 +123,40 @@ class AllOrdersListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Order.objects.all().order_by('-created_at')
+
+class OrderDeleteView(APIView):
+    permission_classes = (IsAuthenticated, ManagerPermission)
+    serializer_class = OrderSerializer
+
+    def delete(self, request):
+        order_id = request.data['order_id']
+        if not order_id:
+            return Response({'detail': 'order_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        order = get_object_or_404(Order, id=order_id)
+
+        order.delete()
+
+        return Response({'detail': 'Order deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+class OrderUpdateView(UpdateAPIView):
+    permission_classes = (IsAuthenticated, ManagerPermission)
+    serializer_class = OrderSerializer
+
+    def put(self, request):
+        order_id = request.data.get('order_id')
+        if not order_id:
+            return Response({'detail': 'order_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        order = get_object_or_404(Order, id=order_id)
+
+        serializer = self.get_serializer(order, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class UserOrdersListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]

@@ -22,6 +22,7 @@ class OrderStatus(models.TextChoices):
     PAYMENT = 'PAYMENT', 'Payment'
     PAID = 'PAID', 'Paid'
     SHIPPED = 'SHIPPED', 'Shipped'
+    PRINTING = 'PRINTING', 'Printing'
     DELIVERED = 'DELIVERED', 'Delivered'
     CANCELLED = 'CANCELLED', 'Cancelled'
 

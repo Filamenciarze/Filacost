@@ -27,8 +27,35 @@
 
 
 <ng-template #orders>
-orders
+  <div class="card-container" *ngIf="allOrders.count > 0; else noOrders">
+    <mat-card class="model-card" *ngFor="let order of allOrders.results">
+      <mat-card-header>
+        <mat-card-title>Order #{{ order.order_id }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Status: {{ order.order_status }}</p>
+        <p>Created: {{ order.created_at | date:'short' }}</p>
+        <p>Shipment: {{ order.shipment_type }}</p>
+        <p>Total: {{ order.total_cost | currency:'PLN' }}</p>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-button (click)="updateStatus(order)">
+          Update Status
+        </button>
+        <button mat-icon-button color="warn" aria-label="Delete" (click)="deleteOrder(order)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <ng-template #noOrders>
+    <div class="no-models">
+      <p>No orders found.</p>
+    </div>
+  </ng-template>
 </ng-template>
+
 <ng-template #sales>
 sales
 </ng-template>
