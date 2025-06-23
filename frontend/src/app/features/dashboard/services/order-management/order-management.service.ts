@@ -23,6 +23,6 @@ export class OrderManagementService {
   }
 
   deleteOrder(order: Order): Observable<Order> {
-    return this.http.delete<any>(AppSettingsService.API_URL+'/order/delete/', {body: {id: order.order_id}});
+    return this.http.delete<any>(AppSettingsService.API_URL+'/order/delete/', {body: {order_id: order.order_id}});
   }
 }

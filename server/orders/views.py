@@ -126,14 +126,13 @@ class AllOrdersListView(generics.ListAPIView):
 
 class OrderDeleteView(APIView):
     permission_classes = (IsAuthenticated, ManagerPermission)
-    serializer_class = OrderSerializer
 
     def delete(self, request):
-        order_id = request.data['order_id']
+        order_id = request.data.get('order_id')
         if not order_id:
             return Response({'detail': 'order_id is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        order = get_object_or_404(Order, id=order_id)
+        order = get_object_or_404(Order, order_id=order_id)
 
         order.delete()
 
