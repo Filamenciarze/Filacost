@@ -6,6 +6,9 @@ from django.db import models
 from datetime import date
 import uuid
 
+from core.models import AuditModel
+
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, role='USER', **extra_fields):
         if not email:
@@ -41,17 +44,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-class Profile(models.Model):
+class Profile(AuditModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    date_of_birth = models.DateField(validators=[MaxValueValidator(date.today)], blank=True)
+    date_of_birth = models.DateField(validators=[MaxValueValidator(date.today)], blank=True, null=True)
     phone_number = PhoneNumberField(blank=True, region='PL')
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
-class Address(models.Model):
+class Address(AuditModel):
     address_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, null=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
     street_number = models.CharField(max_length=5, null=False, blank=False)

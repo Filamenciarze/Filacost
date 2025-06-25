@@ -1,0 +1,73 @@
+<h2 mat-dialog-title>Twój koszyk</h2>
+
+<mat-dialog-content class="cart-content">
+
+  <ng-container *ngIf="!loading; else loadingTpl">
+
+    <ng-container *ngIf="cartItems.count; else emptyTpl">
+
+      <div class="cart-list">
+
+        <div class="cart-item" *ngFor="let item of cartItems.results">
+          <div class="item-info">
+            <div class="item-name">{{ item.model3d.filename_display }}</div>
+            <div class="item-details">
+              Materiał: {{ item.material }} |
+
+              Ilość:
+
+
+              {{ item.quantity }}
+
+
+            </div>
+            <div class="item-price">
+              Pozycja: {{ item.model3d.print_cost * item.quantity | currency }}
+            </div>
+          </div>
+
+          <div class="item-action">
+
+            <button mat-mini-fab color="primary" (click)="decreaseQuantity(item)">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <button mat-mini-fab color="primary" (click)="increaseQuantity(item)">
+              <mat-icon>add</mat-icon>
+            </button>
+            <button mat-mini-fab color="warn" (click)="removeFromCart(item.cartitem_id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+
+
+        <mat-divider></mat-divider>
+
+      </div>
+
+      <div class="cart-total">
+        <span>Razem:</span> <strong>{{ totalPrice | currency }}</strong>
+      </div>
+
+    </ng-container>
+
+  </ng-container>
+
+  <ng-template #loadingTpl>
+    <div class="loading">
+      <mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
+    </div>
+  </ng-template>
+
+  <ng-template #emptyTpl>
+    <p>Twój koszyk jest pusty.</p>
+  </ng-template>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Zamknij</button>
+  <button mat-raised-button color="primary" (click)="goToCheckout()" [disabled]="!cartItems.count">
+    Zamów
+  </button>
+</mat-dialog-actions>

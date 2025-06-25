@@ -1,4 +1,6 @@
 <div class="grid-container">
+
+  <!-- Nagłówek -->
   <div class="nav">
     <h1 class="mat-h1">Models</h1>
     <div>
@@ -9,27 +11,51 @@
       </mat-button-toggle-group>
     </div>
   </div>
-  <mat-grid-list cols="2" rowHeight="350px">
-    @for (card of cards | async; track card) {
-      <mat-grid-tile [colspan]="card.cols" [rowspan]="card.rows">
-        <mat-card class="dashboard-card">
-          <mat-card-header>
-            <mat-card-title>
-              {{card.title}}
-              <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
-                <mat-icon>more_vert</mat-icon>
-              </button>
-              <mat-menu #menu="matMenu" xPosition="before">
-                <button mat-menu-item>Expand</button>
-                <button mat-menu-item>Remove</button>
-              </mat-menu>
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content class="dashboard-card-content">
-            <div>Card Content Here</div>
-          </mat-card-content>
-        </mat-card>
-      </mat-grid-tile>
-    }
-  </mat-grid-list>
+
+  <!-- Lista modeli -->
+  <div class="card-container" *ngIf="models?.results?.length > 0; else noModels">
+    <mat-card class="model-card" *ngFor="let model of models.results">
+      <mat-card-header>
+        <mat-card-title>{{ model.filename_display }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Upload Date: {{ model.created_at | date:'short' }}</p>
+        <p>Fill: {{ model.print_fill }}</p>
+        <p>Print Cost: {{ model.print_cost | currency:'PLN':'symbol':'1.2-2' }}</p>
+        <p>Estimated Print Time: {{ model.print_time_s | durationFormat}}</p>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-icon-button color="warn" (click)="openAddToCartDialog(model.print_id, model.filename_display, model.print_cost)" aria-label="Delete">
+          <mat-icon>add_shopping_cart</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" aria-label="Preview">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button (click)="deleteModel(model)" mat-icon-button color="warn" aria-label="Delete">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+
+  <!-- Szablon na brak modeli -->
+  <ng-template #noModels>
+    <div class="no-models">
+      <p>No models found.</p>
+    </div>
+  </ng-template>
+
+  <!-- Paginacja -->
+  <div class="paginator" *ngIf="models?.results?.length > 0">
+    <button mat-button (click)="prevPage()" [disabled]="currentPage === 1">
+      <mat-icon>chevron_left</mat-icon> Prev
+    </button>
+    <span>Page {{ currentPage }} z {{ totalPages }}</span>
+    <button mat-button (click)="nextPage()" [disabled]="currentPage === totalPages">
+      Next <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+
 </div>

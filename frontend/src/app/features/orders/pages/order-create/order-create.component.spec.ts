@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SceneGraphComponent } from './scene-graph.component';
+import { OrderCreateComponent } from './order-create.component';
 
-describe('SceneGraphComponent', () => {
-  let component: SceneGraphComponent;
-  let fixture: ComponentFixture<SceneGraphComponent>;
+describe('OrderCreateComponent', () => {
+  let component: OrderCreateComponent;
+  let fixture: ComponentFixture<OrderCreateComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SceneGraphComponent]
+      imports: [OrderCreateComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SceneGraphComponent);
+    fixture = TestBed.createComponent(OrderCreateComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

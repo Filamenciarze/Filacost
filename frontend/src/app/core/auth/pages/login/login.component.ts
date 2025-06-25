@@ -43,10 +43,16 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
         next: result => {
+          console.log(result);
           this.userService.authenticate();
           this.userService.setUserData(result);
-          this.router.navigate(['dashboard']).then(() => {
-          });
+          this.router.navigate(['models']).then(value => {
+            this.userService.checkAuthStatus().subscribe({
+              next: result => {
+                this.userService.setUserData(result.user)
+              }
+            })
+          })
         },
         error: err => {
           let snackBarRef = this.snackBar.open('Authorization Failed', 'Ok');

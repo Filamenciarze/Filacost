@@ -53,7 +53,6 @@ export class RegisterComponent {
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
     const confirmPassword = form.get('confirmPassword');
-    console.log(`Password ${password?.value} & ${confirmPassword?.value}`);
 
     if(password?.value !== confirmPassword?.value) {
       confirmPassword?.setErrors({mismatch:true});

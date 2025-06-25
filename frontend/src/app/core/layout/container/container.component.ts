@@ -10,11 +10,13 @@ import {Observable, Subscription} from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import {RouterContentComponent} from '../router-content/router-content.component';
 import {MatListItemComponent} from '../../../shared/utilities/components/mat-list-item/mat-list-item.component';
-import {Router, RouterLink} from '@angular/router';
+import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {UserService} from '../../user/services/user.service';
 import {AuthService} from '../../auth/services/auth.service';
-import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {User} from '../../user/interfaces/user';
+import {CartModalComponent} from '../../../features/orders/components/cart-modal/cart-modal.component';
+import {MatDialog} from '@angular/material/dialog';
+import {Role} from '../../user/enums/Role';
 
 @Component({
   selector: 'app-container',
@@ -32,15 +34,13 @@ import {User} from '../../user/interfaces/user';
     MatListItemComponent,
     NgIf,
     RouterLink,
-    MatMenu,
-    MatMenuTrigger,
-    MatMenuItem
   ]
 })
 export class ContainerComponent implements OnInit, OnDestroy{
   isHandset$: Observable<boolean>;
   isAuthenticated: boolean = false;
-  user: User | null = null;
+  isManager: boolean = false;
+  user: User = {role: Role.USER} as User;
 
   isAuthenticatedSubscription!: Subscription;
   userSubscription!: Subscription;
@@ -51,6 +51,8 @@ export class ContainerComponent implements OnInit, OnDestroy{
     private breakpointObserver: BreakpointObserver,
     private userService: UserService,
     private authService: AuthService,
+    private dialog: MatDialog,
+    private router: Router
   ) {
     this.isHandset$ = this.breakpointObserver.observe(Breakpoints.Handset)
       .pipe(
@@ -63,10 +65,28 @@ export class ContainerComponent implements OnInit, OnDestroy{
     this.isAuthenticatedSubscription = this.userService.isAuthenticated$.subscribe(isAuthenticated => {
       this.isAuthenticated = isAuthenticated;
     })
-    this.userSubscription = this.userService.user$.subscribe(user => {
-      console.log(user);
-      this.user = user;
+    this.userSubscription = this.userService.user$.subscribe({
+      next: user => {
+        if (!!user) {
+          this.user = user;
+          this.isManager = this.user.role == Role.MANAGER;
+        }
+        else {
+          this.isManager = false;
+        }
+      },
+      error: user => {
+        this.isManager = false;
+      }
     })
+
+  }
+
+  openCart() {
+    this.dialog.open(CartModalComponent, {
+      width: '400px',
+      maxWidth: '400px',
+    });
   }
 
   ngOnDestroy() {
@@ -79,4 +99,5 @@ export class ContainerComponent implements OnInit, OnDestroy{
   }
 
 
+  protected readonly Role = Role;
 }

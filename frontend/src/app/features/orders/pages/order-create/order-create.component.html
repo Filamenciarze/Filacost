@@ -1,0 +1,68 @@
+<!-- Dodajemy podsumowanie koszyka -->
+<mat-card class="cart-summary-card">
+  <mat-card-title>Cart Summary</mat-card-title>
+
+  <div *ngIf="cartItems.results.length > 0; else emptyCart">
+    <table mat-table [dataSource]="cartItems.results" class="mat-elevation-z8">
+
+      <ng-container matColumnDef="model">
+        <th mat-header-cell *matHeaderCellDef>Model</th>
+        <td mat-cell *matCellDef="let item">{{ item.model3d.filename_display }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="material">
+        <th mat-header-cell *matHeaderCellDef>Material</th>
+        <td mat-cell *matCellDef="let item">{{ item.material }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef>Quantity</th>
+        <td mat-cell *matCellDef="let item">{{ item.quantity }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['model', 'material', 'quantity']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['model', 'material', 'quantity'];"></tr>
+    </table>
+  </div>
+
+  <ng-template #emptyCart>
+    <p>Your cart is empty.</p>
+  </ng-template>
+</mat-card>
+
+
+<mat-card>
+  <mat-card-title>Place Your Order</mat-card-title>
+
+  <div *ngIf="loading" class="spinner-container">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+  </div>
+
+  <form *ngIf="!loading" [formGroup]="orderForm" (ngSubmit)="submitOrder()">
+
+    <mat-form-field class="full-width">
+      <mat-label>Shipping Address</mat-label>
+      <mat-select formControlName="shipping_address_id">
+        <mat-option *ngFor="let address of addresses" [value]="address.address_id">
+          {{ address.street_number }} {{ address.street }}, {{ address.city }}
+        </mat-option>
+        <mat-option *ngIf="!addresses.length">No addresses provided!</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Shipment Type</mat-label>
+      <mat-select formControlName="shipment_type_id">
+        <mat-option *ngFor="let shipment of shipmentTypes" [value]="shipment.shipment_type_id">
+          {{ shipment.shipment_type }} ({{ shipment.shipment_cost | currency:'PLN' }})
+        </mat-option>
+        <mat-option *ngIf="!shipmentTypes.length">No type of shipment provided! Contact with administration</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="orderForm.invalid">
+      Place Order
+    </button>
+
+  </form>
+</mat-card>

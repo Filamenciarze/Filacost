@@ -19,8 +19,12 @@ export class UserService {
   public isAuthenticated$: Observable<boolean> = this.isAuthenticated.asObservable();
   public user$: Observable<User | null> = this.user.asObservable();
 
-  setUserData(user: User | null) {
+  setUserData(user: User) {
     this.user.next(user);
+  }
+
+  getUserData() {
+    return this.user.value;
   }
 
 

@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 from environs import Env
 
@@ -60,7 +60,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'accounts.middleware.JWTAuthCookieMiddleware'
+    'accounts.middleware.JWTAuthCookieMiddleware',
+    'core.middleware.user_middleware.CurrentUserMiddleware',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
@@ -151,6 +152,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600 # 100MB
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -161,3 +163,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(hours=2),
+}

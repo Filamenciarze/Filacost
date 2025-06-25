@@ -1,4 +1,5 @@
-enum Role {
-  MANAGER = "Manager",
-  USER = "User"
+export enum Role {
+  MANAGER = "MANAGER",
+  USER = "USER",
+  ADMIN = "ADMIN",
 }

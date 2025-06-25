@@ -1,20 +1,20 @@
-import { Component } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MatStep, MatStepLabel, MatStepper, MatStepperNext} from '@angular/material/stepper';
-import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
+import {Component, inject} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatChip} from '@angular/material/chips';
 import {DecimalPipe, NgIf} from '@angular/common';
-import {NgtCanvas} from 'angular-three';
-import {SceneGraphComponent} from '../../../../shared/utilities/components/scene-graph/scene-graph.component';
+import {UploadModelService} from '../../services/upload-model/upload-model.service';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {finalize} from 'rxjs';
+import {HttpEvent, HttpEventType} from '@angular/common/http';
+import {Router} from '@angular/router';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-upload-model',
   imports: [
-    MatStepper,
-    MatStep,
-    MatStepLabel,
     MatFormField,
     MatLabel,
     MatInput,
@@ -23,38 +23,44 @@ import {SceneGraphComponent} from '../../../../shared/utilities/components/scene
     MatChip,
     NgIf,
     MatButton,
-    MatStepperNext,
     DecimalPipe,
-    NgtCanvas
+    ReactiveFormsModule,
+    MatError,
+    MatProgressBar,
   ],
   templateUrl: './upload-model.component.html',
   standalone: true,
   styleUrl: './upload-model.component.scss'
 })
 export class UploadModelComponent {
-  fileForm: FormGroup;
-  metaDataForm: FormGroup;
+  _snackBar = inject(MatSnackBar)
+  uploadForm: FormGroup;
 
-  protected sceneGraph = SceneGraphComponent;
   file: File | null = null;
   fileName: string = '';
+  isLoading: boolean = false;
+  uploadProgress = 0;
 
 
 
   constructor(
     private fb: FormBuilder,
+    private uploadModelService: UploadModelService,
+    private router: Router
   ) {
-    this.fileForm = this.fb.group({
+    this.uploadForm = this.fb.group({
       file: [null, Validators.required],
+      filenameDisplay: ['', Validators.required],
+      printFill: [0.15, Validators.required],
     });
-    this.metaDataForm = this.fb.group({})
   }
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.file = input.files[0];
       console.log(this.file);
-      this.fileForm.patchValue({ file: input.files[0] });
+      this.uploadForm.patchValue({ file: input.files[0] });
+      this.uploadForm.patchValue({ filenameDisplay: input.files[0].name });
       this.fileName = this.file.name;
     }
   }
@@ -62,5 +68,36 @@ export class UploadModelComponent {
   removeFile(): void {
     this.file = null;
     this.fileName = '';
+  }
+
+  onSubmit(): void {
+    if(this.uploadForm.valid) {
+      this.isLoading = true
+      this.uploadModelService.sendModel(
+        this.uploadForm.value.file,
+        this.uploadForm.value.filenameDisplay,
+        this.uploadForm.value.printFill,
+      )
+        .pipe(finalize(() => {
+          this.isLoading=false;
+          this.router.navigateByUrl('/models');
+        }))
+        .subscribe({
+          next: (event: HttpEvent<any>) => {
+            switch (event.type) {
+              case HttpEventType.UploadProgress:
+                if (event.total) {
+                  this.uploadProgress = Math.round(100 * event.loaded / event.total);
+                }
+                break;
+              case HttpEventType.Response:
+                console.log('Upload completed successfully!', event.body);
+                this._snackBar.open("Upload completed successfully!")
+                // Tu możesz dodać np. snackbar z sukcesem
+                break;
+            }
+          }
+        })
+    }
   }
 }

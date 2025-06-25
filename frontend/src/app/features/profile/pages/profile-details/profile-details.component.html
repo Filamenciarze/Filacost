@@ -1,0 +1,103 @@
+<div *ngIf="loading" class="spinner-container">
+  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+</div>
+
+<div *ngIf="!loading && profile" class="profile-container">
+
+  <mat-card class="profile-card">
+    <mat-card-header>
+      <mat-card-title>Profile Details</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content *ngIf="!!profile; else noProfile">
+      <div class="profile-field">
+        <span class="field-label">First Name:</span> {{ profile.first_name }}
+      </div>
+
+      <div class="profile-field">
+        <span class="field-label">Last Name:</span> {{ profile.last_name }}
+      </div>
+
+      <div class="profile-field">
+        <span class="field-label">Date of Birth:</span> {{ profile.date_of_birth }}
+      </div>
+
+      <div class="profile-field">
+        <span class="field-label">Phone Number:</span> {{ profile.phone_number }}
+      </div>
+    </mat-card-content>
+
+    <ng-template #noProfile>
+      No profile set
+    </ng-template>
+
+    <mat-card-actions align="end">
+      <button mat-flat-button color="primary" (click)="openAddProfileDialog()">
+        {{ !!profile ? 'Update Profile' : 'Add Profile' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- ADDRESSES -->
+  <mat-card class="profile-card">
+    <mat-card-header>
+      <mat-card-title>Address Details</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content *ngIf="addresses.length > 0; else noAddresses">
+      <div class="addresses-list">
+        <div *ngFor="let address of addresses" class="address-item">
+
+          <div class="address-data">
+            <div class="address-field">
+              <span class="field-label">Street:</span>
+              <span>{{ address.street_number }} {{ address.street }}</span>
+            </div>
+
+            <div class="address-field">
+              <span class="field-label">Zip Code:</span>
+              <span>{{ address.zipcode }}</span>
+            </div>
+
+            <div class="address-field">
+              <span class="field-label">City:</span>
+              <span>{{ address.city }}</span>
+            </div>
+
+            <div class="address-field">
+              <span class="field-label">State:</span>
+              <span>{{ address.state }}</span>
+            </div>
+
+            <div class="address-field">
+              <span class="field-label">Country:</span>
+              <span>{{ address.country }}</span>
+            </div>
+          </div>
+
+          <!-- Przycisk edycji i usuwania -->
+          <div class="address-actions">
+            <button mat-icon-button color="primary" (click)="editAddress(address)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteAddress(address)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
+          <mat-divider class="address-divider"></mat-divider>
+        </div>
+      </div>
+    </mat-card-content>
+
+
+    <ng-template #noAddresses>
+      <p>No addresses added.</p>
+    </ng-template>
+
+    <mat-card-actions align="end">
+      <button mat-flat-button color="primary" (click)="openAddAddressDialog()">Add Address</button>
+    </mat-card-actions>
+  </mat-card>
+
+</div>

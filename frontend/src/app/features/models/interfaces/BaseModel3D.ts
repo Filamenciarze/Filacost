@@ -1,5 +1,8 @@
 export interface BaseModel3D {
-  id: string,
-  filename: string,
-  file: Blob,
+  print_id: string,
+  filename_display: string,
+  created_at: Date,
+  print_fill: number,
+  print_cost: number,
+  print_time_s: number
 }
